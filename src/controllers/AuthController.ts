@@ -1,10 +1,12 @@
 import  UserController from './UserController'
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../entity/User'
-import { hashPsw, sendMail, verify, sendNewPassword } from '../helpers'
+import { hashPsw, sendMail, verify, sendNewPassword, sendNewPasswordSaved } from '../helpers'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
 import  '../middlewares/passport'
+import { UpdateQueryBuilder } from 'typeorm';
+import update from './UserController'
 
 export default class AuthController {
 
@@ -74,6 +76,7 @@ export default class AuthController {
 
     static async forgotPassword(req, res) {
         const { email } = req.body;
+        console.log(email)
 
         if (typeof email !== 'string')
             res.status(400).send("Enter a valid email adress")
@@ -82,8 +85,19 @@ export default class AuthController {
         
         if(!user)
             res.status(400).send("You don't have an account")
+
+        const token = jwt.sign({uuid: user.uuid}, process.env.RESET_PASSWORD_KEY, {expiresIn: '30m'})
         
-        const send = sendNewPassword(email)
+        user.resetLink = token
+        await User.save(user)
+
+        
+        const send = sendNewPassword(email, token)
+        
+        
+
+        console.log(user)
+        
 
         try{
             if (send) {
@@ -94,6 +108,39 @@ export default class AuthController {
             console.log(error);
             }
         }
+
+        static async resetPassword(req, res){
+            
+            const {resetLink, newPass} = req.body
+            console.log(resetLink)
+            
+            if(resetLink){
+                console.log('enteref')
+                jwt.verify(resetLink, process.env.RESET_PASSWORD_KEY, async (err, decodedData) => {
+                    if(err)
+                        res.status(401).send("Token incorrecte")
+                    const userId = decodedData.uuid
+                    const user = await User.findOne({uuid : userId})
+                    if(!user)
+                        res.status(400).send("You don't have an account")
+                    user.password = newPass
+                    await User.save(user)
+
+                    const send = sendNewPasswordSaved(user.email)
+                    try{
+                        if (send) {
+                            return res.status(200).send(`Password succesfully changed`);
+                        }
+                    }
+                    catch (error) {
+                        console.log(error);
+                        }
+                    
+
+        })
+    }else   
+        return res.status(401).send(`account not found`);
+    }
         
 
    /*  static resetPassword(req, res) {

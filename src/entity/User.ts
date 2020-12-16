@@ -16,4 +16,6 @@ export class User extends BaseEntity {
     @Column("varchar", {length: 250})
     password: string;
 
+    @Column({ type: "varchar", nullable: true})    
+    resetLink: string;
 }
