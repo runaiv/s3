@@ -1,5 +1,6 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, JoinColumn, JoinTable} from "typeorm";
 import { v4 as uuid } from 'uuid';
+import { Bucket } from './Bucket'
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -18,4 +19,7 @@ export class User extends BaseEntity {
 
     @Column({ type: "varchar", nullable: true})    
     resetLink: string;
+
+    @OneToMany(() => Bucket, bucket => bucket.user)
+    bucket: Bucket[];
 }

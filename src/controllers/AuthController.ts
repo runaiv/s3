@@ -11,7 +11,6 @@ import update from './UserController'
 export default class AuthController {
 
     static async signup(Request, Response) {
-        console.log('ee')
         const {nickname, email, password} = Request.body
                 
         // Si on recupere les champs 
@@ -76,7 +75,6 @@ export default class AuthController {
 
     static async forgotPassword(req, res) {
         const { email } = req.body;
-        console.log(email)
 
         if (typeof email !== 'string')
             res.status(400).send("Enter a valid email adress")
@@ -90,14 +88,8 @@ export default class AuthController {
         
         user.resetLink = token
         await User.save(user)
-
         
         const send = sendNewPassword(email, token)
-        
-        
-
-        console.log(user)
-        
 
         try{
             if (send) {
@@ -112,10 +104,8 @@ export default class AuthController {
         static async resetPassword(req, res){
             
             const {resetLink, newPass} = req.body
-            console.log(resetLink)
             
             if(resetLink){
-                console.log('enteref')
                 jwt.verify(resetLink, process.env.RESET_PASSWORD_KEY, async (err, decodedData) => {
                     if(err)
                         res.status(401).send("Token incorrecte")
@@ -141,9 +131,4 @@ export default class AuthController {
     }else   
         return res.status(401).send(`account not found`);
     }
-        
-
-   /*  static resetPassword(req, res) {
-
-    } */
 }

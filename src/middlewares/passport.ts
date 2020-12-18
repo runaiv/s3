@@ -47,11 +47,8 @@ passport.use(
 
         
           if (user.email !== account.email) {
-        console.log("a")
           done('Wrong API Token', null)
         } else {
-
-          console.log("a")
 
           done(null, user)
         }

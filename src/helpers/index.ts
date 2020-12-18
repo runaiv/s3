@@ -14,7 +14,6 @@ async function verify(password: string, bdpsw: string) {
 
 async function sendMail(userMail: string) {
     let testAccount = await nodemailer.createTestAccount();
-    console.log(testAccount)
 
     let transport = nodemailer.createTransport({
         host: "smtp.ethereal.email",
@@ -48,7 +47,6 @@ async function sendMail(userMail: string) {
 async function sendNewPassword(userMail: string, token: string) {
    // let testAccount = await nodemailer.createTestAccount();
    let testAccount = await nodemailer.createTestAccount();
-   console.log(testAccount)
 
    let transport = nodemailer.createTransport({
        host: "smtp.ethereal.email",
