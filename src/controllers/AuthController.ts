@@ -1,5 +1,5 @@
 import  UserController from './UserController'
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, request, Request, Response } from 'express';
 import { User } from '../entity/User'
 import { hashPsw, sendMail, verify, sendNewPassword, sendNewPasswordSaved } from '../helpers'
 import passport from 'passport'
@@ -11,6 +11,7 @@ import update from './UserController'
 export default class AuthController {
 
     static async signup(Request, Response) {
+        console.log("e")
         const {nickname, email, password} = Request.body
                 
         // Si on recupere les champs 
@@ -50,12 +51,14 @@ export default class AuthController {
     static async login(Request: Request, Response: Response, next: NextFunction) {
         const { email, password } = Request.body
 
-
         if (!email || !password) 
             return Response.status(400).send('Champs manquant, il est necessaire de donner l\'email & le mot de passe');
 
         const user = await User.findOne({email: email})
 
+        if(!user){
+            Response.status(400).send("You don't have an account")
+        }
 
         passport.authenticate('local', {session: false}, (error, user) => {
             if(error || !user)

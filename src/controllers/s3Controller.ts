@@ -240,7 +240,7 @@ export default class s3Controller {
     static async getBlob(req, res, next) {
         const { uuid, bucketName } = req.params
         const { id } = req.body
-        
+        console.log(__dirname)
         console.log( uuid, id)
 
         if (typeof (bucketName ) == 'string' && (uuid || bucketName || id) ) {
@@ -259,18 +259,56 @@ export default class s3Controller {
             if (typeof blob === 'undefined')
                 return res.status(400).send('blob not found')
 
-            const path = `./myS3DATA/${uuid}/${bucketName}/${blob.name}`
+            const path = `/home/arun/Bureau/projects/jwt-express-orm/server/myS3DATA/${uuid}/${bucketName}/${blob.name}`
+    
+            console.log(path)
+
+            try {
+                if (fs.existsSync(path))
+                    return res.status(200).sendFile(path)
+                else
+                    return res.status(400).send('blob not found')
+            } catch (error) {
+                console.log(error) 
+            }
+        } 
+        else {
+            return res.status(400).send(`Error`)
+        }
+    }
+
+    static async getBlobMetaData(req, res, next) {
+        const { uuid, bucketName } = req.params
+        const { id } = req.body
+        console.log( uuid, id)
+
+        if (typeof (bucketName ) == 'string' && (uuid || bucketName || id) ) {
+            const user = await User.findOne({uuid: uuid})
+            
+            if (typeof user === 'undefined') 
+                return res.status(400).send('utilisaeur n\'existe pas')
+            
+            const bucketRepo = await Bucket.findOne({bucketName: bucketName})
+
+            if (typeof bucketRepo === 'undefined' || bucketRepo.bucketName !== bucketName)
+                return res.status(400).send('Error bucket')
+
+           const blob = await Blob.findOne({id: id})
+           
+            if (typeof blob === 'undefined')
+                return res.status(400).send('blob not found')
+            
+            const pathPersonal = '/home/arun/Bureau/projects/jwt-express-orm/server' // à  modifier selon le path
+            const path = `${pathPersonal}/myS3DATA/${uuid}/${bucketName}/${blob.name}`
     
             console.log(path)
 
             try {
                 if (fs.existsSync(path)) {
-                    console.log('ee')
-
-                    return res.status(200).sendFile(path)
+                    return res.status(200).send(`your blob's name is ${blob.name} et the size of it is ${blob.size}`)
                 }
                 else
-                    return res.Send(404).send('blob not found')
+                    return res.status(400).send('blob not found')
             } catch (error) {
                 console.log(error) 
             }

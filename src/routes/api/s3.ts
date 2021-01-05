@@ -35,6 +35,6 @@ router.head('/:uuid/checkBucket', s3Controller.checkBucket)
 router.post('/:uuid/:bucketName/addBlob',upload.single('blob'), s3Controller.addBlob)
 router.delete('/:uuid/:bucketName/deleteBlob', s3Controller.deleteBlob)
 router.get('/:uuid/:bucketName/getBlob', s3Controller.getBlob)
-
+router.get('/:uuid/:bucketName/getBlobMetaData', s3Controller.getBlobMetaData)
 
 export default router;

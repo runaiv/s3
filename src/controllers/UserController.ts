@@ -44,7 +44,7 @@ export default class UserController {
                     return response.status(200).send(`Compte crée avec success, vous avez reçu mail sur ${email}`);
                 } 
             } catch (error) {
-                console.log(error);   
+                console.log(`${error} hehe`);   
             }
         } else {
             return response.status(400).send(`Des champs sont manquants `);
